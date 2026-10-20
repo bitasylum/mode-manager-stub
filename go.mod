@@ -3,6 +3,7 @@ module github.com/bitasylum/mode-manager-stub
 go 1.26.0
 
 require (
+	github.com/bitasylum/mode-operator/client v0.0.0-20261020070136-eca0bd662d49
 	github.com/onsi/ginkgo/v2 v2.33.1
 	github.com/onsi/gomega v1.40.0
 	k8s.io/api v0.37.1
