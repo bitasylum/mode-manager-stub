@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mode-manager-stub</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>mode-manager-stub</h1>
+  <p class="note">A test stand-in for the mode manager. For test clusters only.</p>
+</header>
+<main>
+  <section>
+    <h2>Mode</h2>
+    <p class="big"><span id="mode">…</span> <span id="phase" class="tag"></span></p>
+    <p id="error" class="error" hidden></p>
+    <div id="next"></div>
+    <form id="set">
+      <label>Change to <select id="set-mode"></select></label>
+      <label><input type="checkbox" id="set-check" checked> check first</label>
+      <button>Set</button>
+    </form>
+    <form id="move">
+      <label>Move to <select id="move-target"></select></label>
+      <button>Move</button>
+      <span class="note">in as many steps as the transitions need</span>
+    </form>
+    <form id="raw">
+      <label>Write any mode <input id="raw-mode" autocomplete="off" spellcheck="false"></label>
+      <button>Write</button>
+      <span class="note">without checking; the API server decides</span>
+    </form>
+    <p id="result" class="note"></p>
+  </section>
+  <section>
+    <h2>ClusterMode status</h2>
+    <dl id="status"></dl>
+    <table id="unsettled" hidden><thead><tr><th>Workload</th><th>State</th><th>Message</th></tr></thead><tbody></tbody></table>
+  </section>
+  <section>
+    <h2>Move</h2>
+    <ol id="steps"></ol>
+    <button id="stop-move" hidden>Stop the move</button>
+  </section>
+  <section>
+    <h2>Startup and fingerprint</h2>
+    <dl id="startup"></dl>
+    <table id="fingerprint"><thead><tr><th>Node</th><th>Boot ID</th></tr></thead><tbody></tbody></table>
+  </section>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

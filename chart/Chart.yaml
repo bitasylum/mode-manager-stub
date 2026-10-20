@@ -1,0 +1,12 @@
+apiVersion: v2
+name: mode-manager-stub
+description: >-
+  A test stand-in for the mode manager: writes a cluster's mode to a
+  ClusterMode, and serves a page for changing it. For test clusters only.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+kubeVersion: ">=1.30.0-0"
+home: https://github.com/bitasylum/mode-manager-stub
+sources:
+  - https://github.com/bitasylum/mode-manager-stub

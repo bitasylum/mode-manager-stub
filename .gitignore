@@ -1,0 +1,20 @@
+# Binaries and tools
+bin/
+
+# A local workspace for building against an unpublished client library;
+# see make workspace.
+go.work
+go.work.sum
+
+# Test output
+*.out
+*.test
+
+# Kubeconfigs may hold secrets
+*.kubeconfig
+
+# Editors
+.idea
+.vscode
+*.swp
+*~

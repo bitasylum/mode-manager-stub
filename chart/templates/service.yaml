@@ -1,0 +1,18 @@
+# ClusterIP only: the page has no login, so reach it with kubectl
+# port-forward, never through an Ingress.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "stub.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "stub.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "stub.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP

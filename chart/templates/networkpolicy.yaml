@@ -1,0 +1,22 @@
+{{- if .Values.networkPolicy.enabled }}
+# Ingress to the page and API only from the peers in networkPolicy.from.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "stub.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "stub.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "stub.selectorLabels" . | nindent 6 }}
+  policyTypes: [Ingress]
+  {{- with .Values.networkPolicy.from }}
+  ingress:
+    - from:
+        {{- toYaml . | nindent 8 }}
+      ports:
+        - port: http
+  {{- end }}
+{{- end }}

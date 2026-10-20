@@ -1,0 +1,10 @@
+mode-manager-stub {{ .Chart.AppVersion }} writes ClusterMode {{ .Values.clusterMode }}, following ClusterModeDefinition {{ .Values.definition }}.
+
+It is for test clusters only: the page has no login. Open it with:
+
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "stub.fullname" . }} 8080:{{ .Values.service.port }}
+
+and browse to http://localhost:8080/. Its state is also at /api/state.
+
+mode-operator must be installed for the stub to write the mode; until its
+CRDs are, the stub holds the mode in memory.

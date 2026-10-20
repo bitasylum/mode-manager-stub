@@ -1,0 +1,38 @@
+name: E2E Tests
+
+on:
+  push:
+  pull_request:
+
+permissions: {}
+
+jobs:
+  test-e2e:
+    permissions:
+      contents: read
+    name: Run on Ubuntu
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Clone the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The Go the Dockerfile builds the image with, rather than go.mod's
+      # minimum, so CI checks what ships.
+      - name: Read the image's Go version
+        id: go
+        run: |
+          version=$(hack/build-go-version.sh)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ steps.go.outputs.version }}
+
+      # mode-operator is built and installed from the commit go.mod's version
+      # of the client library names, so the operator matches the library.
+      - name: Running Test e2e
+        run: make test-e2e

@@ -1,0 +1,52 @@
+version: 2
+updates:
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: weekly
+    # Don't propose a release until it has been out a week, except for
+    # mode-operator's client library, which is this project's own. Security
+    # updates aren't delayed.
+    cooldown:
+      default-days: 7
+      exclude:
+        - github.com/bitasylum/*
+    groups:
+      kubernetes:
+        patterns:
+          - "k8s.io/*"
+          - "sigs.k8s.io/*"
+      go:
+        patterns:
+          - "*"
+
+  # The golang builder image and the distroless runtime image. Go patch
+  # releases only: a new Go minor version is a change to make on purpose. Go
+  # patch releases are mostly security fixes, and Dependabot raises no
+  # security updates for images, so they skip the cooldown.
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+      exclude:
+        - golang
+    ignore:
+      - dependency-name: golang
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    # Major versions come as PRs of their own.
+    groups:
+      actions:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch

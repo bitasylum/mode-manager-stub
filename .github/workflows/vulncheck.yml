@@ -1,0 +1,41 @@
+name: Vulnerabilities
+
+on:
+  push:
+  pull_request:
+  # New vulnerabilities are published without any change here, so check
+  # weekly too.
+  schedule:
+    - cron: "41 5 * * 1"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  govulncheck:
+    permissions:
+      contents: read
+    name: Run on Ubuntu
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Clone the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The Go the Dockerfile builds the image with, rather than go.mod's
+      # minimum, so CI checks what ships.
+      - name: Read the image's Go version
+        id: go
+        run: |
+          version=$(hack/build-go-version.sh)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ steps.go.outputs.version }}
+
+      - name: Check for known vulnerabilities
+        run: make vulncheck

@@ -1,0 +1,47 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+permissions: {}
+
+jobs:
+  test:
+    permissions:
+      contents: read
+    name: Run on Ubuntu
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Clone the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The Go the Dockerfile builds the image with, rather than go.mod's
+      # minimum, so CI checks what ships.
+      - name: Read the image's Go version
+        id: go
+        run: |
+          version=$(hack/build-go-version.sh)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ steps.go.outputs.version }}
+
+      # CI builds against the client library version go.mod requires.
+      - name: Check go.mod
+        run: |
+          make check-no-replace
+          go mod tidy -diff
+
+      - name: Running Tests
+        run: |
+          make test
+          make verify-published
+
+      - name: Lint the chart
+        run: make helm-lint

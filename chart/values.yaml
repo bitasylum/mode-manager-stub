@@ -1,0 +1,83 @@
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: ghcr.io/bitasylum/mode-manager-stub
+  # Defaults to the chart's appVersion.
+  tag: ""
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+# The ClusterMode the stub writes, and the ClusterModeDefinition it follows.
+clusterMode: default
+definition: standard
+# The value of the ClusterMode's mode.bitasylum.org/writer label.
+writerLabel: mode-manager-stub
+# The mode to run in without the CRDs or the definition.
+builtinDefault: standby
+# The only modes the stub runs in; a stored mode outside them is reset to the
+# default on startup. Empty means any of the definition's modes.
+knownModes: []
+# How often to check for the CRDs while they aren't installed.
+discoveryInterval: 1m
+# How long to wait after a node change before saving the fingerprint.
+debounce: 2s
+# How long a move waits for each mode to settle before it stops. 0s means no
+# limit.
+moveStepTimeout: 10m
+# More flags, for example --v=4.
+extraArgs: []
+
+modeOperator:
+  # mode-operator's chart creates this ClusterRole, limited to the ClusterModes
+  # in its modeManager.clusterModes value. The stub's ServiceAccount is bound
+  # to it.
+  writerClusterRole: mode-operator-clustermode-writer
+
+# The page and API have no login, so by default other pods may not connect
+# to them. kubectl port-forward still works: a NetworkPolicy doesn't affect
+# it. Nor can it block the stub's own node, which kubelet's probes need: on a
+# single-node cluster, that includes the API server. On more nodes, allow the
+# addresses the API server connects from, to use its service proxy; these
+# depend on the network plugin. For example:
+#   from:
+#     - ipBlock:
+#         cidr: 172.18.0.2/32
+# It has no effect without a network plugin that enforces NetworkPolicy.
+networkPolicy:
+  enabled: true
+  from: []
+
+serviceAccount:
+  # Annotations for the ServiceAccount.
+  annotations: {}
+
+service:
+  port: 8080
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

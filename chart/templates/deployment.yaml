@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "stub.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "stub.labels" . | nindent 4 }}
+spec:
+  # One writer at a time: a rolling update would run two for a while.
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "stub.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "stub.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "stub.fullname" . }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: mode-manager-stub
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - {{ printf "--cluster-mode=%s" .Values.clusterMode | quote }}
+            - {{ printf "--definition=%s" .Values.definition | quote }}
+            - {{ printf "--writer-label=%s" .Values.writerLabel | quote }}
+            - {{ printf "--builtin-default=%s" .Values.builtinDefault | quote }}
+            {{- with .Values.knownModes }}
+            - {{ printf "--known-modes=%s" (join "," .) | quote }}
+            {{- end }}
+            - {{ printf "--discovery-interval=%s" .Values.discoveryInterval | quote }}
+            - {{ printf "--debounce=%s" .Values.debounce | quote }}
+            - {{ printf "--move-step-timeout=%s" .Values.moveStepTimeout | quote }}
+            - --listen=:8080
+            {{- with .Values.extraArgs }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,10 @@
+# Ignore everything by default and re-include only what the build needs.
+**
+
+!**/*.go
+**/*_test.go
+!internal/web/static/**
+!go.mod
+!go.sum
+# Tools, and the mode-operator clone the e2e tests build from.
+bin/

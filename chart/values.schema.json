@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "clusterMode": {
+      "type": "string",
+      "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$",
+      "maxLength": 63
+    },
+    "definition": {
+      "type": "string",
+      "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$",
+      "maxLength": 253
+    },
+    "writerLabel": {
+      "description": "A label value; empty leaves the label out.",
+      "type": "string",
+      "pattern": "^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$",
+      "maxLength": 63
+    },
+    "builtinDefault": {
+      "$ref": "#/definitions/mode"
+    },
+    "knownModes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/mode"
+      }
+    },
+    "discoveryInterval": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/duration"
+        },
+        {
+          "not": {
+            "pattern": "^(0+(\\.0+)?(ns|us|µs|ms|s|m|h))+$"
+          }
+        }
+      ],
+      "description": "More than zero."
+    },
+    "debounce": {
+      "$ref": "#/definitions/duration"
+    },
+    "moveStepTimeout": {
+      "$ref": "#/definitions/duration"
+    },
+    "extraArgs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "modeOperator": {
+      "type": "object",
+      "properties": {
+        "writerClusterRole": {
+          "description": "mode-operator's writer role, never a broader one.",
+          "type": "string",
+          "pattern": "clustermode-writer$"
+        }
+      }
+    },
+    "networkPolicy": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "from": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "mode": {
+      "type": "string",
+      "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+      "maxLength": 63
+    },
+    "duration": {
+      "description": "A Go duration with a unit, such as 2s or 1m.",
+      "type": "string",
+      "pattern": "^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
+    }
+  }
+}
