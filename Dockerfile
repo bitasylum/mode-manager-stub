@@ -8,7 +8,7 @@ FROM scratch AS library
 # together. hack/build-go-version.sh reads the Go version from this line, so
 # CI and make vulncheck use the Go that builds the image. The builder runs on
 # the build machine's platform and cross-compiles for the target.
-FROM --platform=$BUILDPLATFORM golang:1.26.10@sha256:5c3f3f28a273c9b61698b2d34f18375929790ab1f1d3835d032d21e2b31eae0c AS builder
+FROM --platform=$BUILDPLATFORM golang:1.26.11@sha256:4165ee6bf3b7811fd7b40373290405c83d0167dcb87ee5f29c427cdcef45ff8f AS builder
 ARG TARGETOS
 ARG TARGETARCH
 
